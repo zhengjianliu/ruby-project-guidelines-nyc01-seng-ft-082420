@@ -12,23 +12,25 @@
 
 ActiveRecord::Schema.define(version: 2020_09_08_175625) do
 
-  create_table "appointment", force: :cascade do |t|
+  create_table "appointments", force: :cascade do |t|
     t.integer "user_id"
     t.integer "event_id"
   end
 
-  create_table "event", force: :cascade do |t|
+  create_table "events", force: :cascade do |t|
+    t.string "name"
     t.string "location"
     t.integer "date"
     t.integer "time"
     t.string "description"
   end
 
-  create_table "user", force: :cascade do |t|
+  create_table "users", force: :cascade do |t|
     t.string "name"
     t.integer "phone"
     t.integer "age"
     t.string "occupation"
+    t.string "password"
   end
 
 end

@@ -1,24 +1,25 @@
 require 'pry'
 require_relative 'user.rb'
+require_relative 'event.rb'
+require_relative 'appointment.rb'
 
-def run
+def start
   puts "WELCOME!!!"
-  puts "Would you to login or sign up?"
   prompt = TTY::Prompt.new
   input = prompt.select("Would you to login or sign up?", %w(Login Signup))
+
   if input == "Login"
     ## This is here after user login into their account!!
-    puts "Login!!!"
-    ## This is here after user wanna to signup!!
-  elsif input == "Signup"
-    # t.string :name
-    # t.integer :phone
-    # t.integer :age
-    # t.string :occupation
-    User.signup
+    current_user = User.login
+    current_user.welcome
+    current_user.create_event
 
+
+  elsif input == "Signup"
+    new_user = User.signup
+    new_user.welcome
   end
 
 end
 
-# run
+start

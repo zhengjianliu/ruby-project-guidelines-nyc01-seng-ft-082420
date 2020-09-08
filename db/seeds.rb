@@ -2,4 +2,4 @@ User.destroy_all
 Event.destroy_all
 Appointment.destroy_all
 
-jay = User.create("ZHENGJIAN LIU",917213212,12,"Programmer")
+User.create(name: "ZHENGJIAN LIU", phone: 1234, age:22, occupation: "programmer", password: 1234)
