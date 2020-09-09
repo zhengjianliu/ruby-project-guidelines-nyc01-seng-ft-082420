@@ -76,7 +76,9 @@ class User < ActiveRecord::Base
       new_event = Event.find_or_create_by(name: new_event_name, category: new_event_category,location: new_event_location,
       date: new_event_time, time: new_event_time, description: new_event_description)
       puts "Your new event #{new_event_name} is now created!"
+      User.loggedin(current_user)
       Appointment.create(user_id: self.id, event_id: new_event.id)
+
     else
       puts "GO BACK!"
       User.loggedin(current_user)
@@ -102,14 +104,26 @@ class User < ActiveRecord::Base
         Date: #{event.date} | Time: #{event.time}
         Description: #{event.description}
         "
+      elsif event.name == nil
+        puts "You have no appointment scheduled!"
+        User.loggedin(current_user)
       end} }
 
     choice = ["GO BACK","Cancel this appointment"]
     input = prompt.select("---------------------", choice, symbols: { marker: "👉" })
+    cancel_appt = Appointment.all.select{|appt| appt if appt.user_id == self.id}.map{ |appt| appt.id}
     if input == "Cancel this appointment"
+      cancel_appt.find{ |a| Appointment.all.select{|appt|
+        if appt.id == a
+          appt.destroy
+          User.loggedin(current_user)
+        end} }
+
+
     elsif input == "GO BACK"
       puts "GO BACK!"
       User.loggedin(current_user)
+
     end
 
 

@@ -23,3 +23,4 @@ def start
 end
 
 start
+binding.pry
