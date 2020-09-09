@@ -33,7 +33,7 @@ class User < ActiveRecord::Base
     elsif input == "Login to another account"
       start
     elsif input == "Log out"
-      puts "Goodbye!"
+      puts "Goodbye! 👋"
     end
   end
 
@@ -111,9 +111,7 @@ class User < ActiveRecord::Base
       puts "GO BACK!"
       User.loggedin(current_user)
     end
-  end
 
+
+  end
 end
-# User.find_or_create_by(name: new_user_name, age: new_user_age,
-#   phone: new_user_phone, occupation: new_user_occupation, password: new_user_password)
-# User.login

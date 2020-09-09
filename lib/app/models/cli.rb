@@ -16,6 +16,8 @@ def start
   elsif input == "Signup"
     current_user = User.signup
     User.loggedin(current_user)
+  else
+    puts "Goodbye! 👋"
   end
 
 end
