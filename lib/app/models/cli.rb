@@ -6,7 +6,7 @@ require_relative 'appointment.rb'
 def start
   puts "WELCOME!!!"
   prompt = TTY::Prompt.new
-  input = prompt.select("Would you to login or sign up?", %w(Login Signup Exit))
+  input = prompt.select("Would you to login or sign up?", %w(Login Signup Exit),symbols: { marker: "👉" })
 
   if input == "Login"
     ## This is here after user login into their account!!

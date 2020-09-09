@@ -21,12 +21,17 @@ class User < ActiveRecord::Base
 
   def self.loggedin(current_user)
     prompt = TTY::Prompt.new
-    choice = ["View & edit Appointment", "Create Appointment", "Log out"]
-    input = prompt.select(current_user.welcome, choice)
+    choice = ["View & edit Appointment", "Create New Event", "Cancel Your Event",
+      "Seach & Join Event", "Login to another account","Log out"]
+    input = prompt.select(current_user.welcome, choice, symbols: { marker: "👉" })
     if input == "View & edit Appointment"
       current_user.display_all_appointments
-    elsif input ==  "Create Appointment"
+    elsif input ==  "Create New Event"
       current_user.create_event
+    elsif input == "Seach & Join Event"
+      # current_user.view_or_join_Event ##alex is working on this.
+    elsif input == "Login to another account"
+      start
     elsif input == "Log out"
       puts "Goodbye!"
     end
@@ -53,12 +58,14 @@ class User < ActiveRecord::Base
   end
 
   def welcome
+    puts "\n"
     puts "Hey #{self.name}! Welcome to the BOOKING SYSTEM!!"
   end
 
   def create_event
+    current_user = self
     prompt = TTY::Prompt.new
-    input = prompt.select("Do you want to create a new event?", %w(YES NO))
+    input = prompt.select("Do you want to create a new event?", %w(YES NO),symbols: { marker: "👉" })
     if input == "YES"
       new_event_name = prompt.ask("Event Name: ")
       new_event_category = prompt.ask("Event Category: ")
@@ -71,18 +78,40 @@ class User < ActiveRecord::Base
       puts "Your new event #{new_event_name} is now created!"
       Appointment.create(user_id: self.id, event_id: new_event.id)
     else
-
+      puts "GO BACK!"
+      User.loggedin(current_user)
     end
   end
 
   def display_all_appointments
+    current_user = self
     prompt = TTY::Prompt.new
     appts = Appointment.all.select{|appt| appt if appt.user_id == self.id}.map{ |appt| appt.event_id}
     all_appts_name = []
     appts.each{ |a_id| Event.all.select{ |event| all_appts_name << event.name if event.id == a_id}}
-    prompt.select("Select and and view detail of you appointment:", all_appts_name)
-  end
+    selected_appt = prompt.select("Select and and view detail of you appointment:", all_appts_name, symbols: { marker: "👉" })
 
+    appts.find{ |a| Event.all.select{|event|
+      if event.name == selected_appt
+        puts "
+        The Appointment Info:
+        ---------------------
+        Event: #{event.name}
+        Category: #{event.category}
+        Location: #{event.location}
+        Date: #{event.date} | Time: #{event.time}
+        Description: #{event.description}
+        "
+      end} }
+
+    choice = ["GO BACK","Cancel this appointment"]
+    input = prompt.select("---------------------", choice, symbols: { marker: "👉" })
+    if input == "Cancel this appointment"
+    elsif input == "GO BACK"
+      puts "GO BACK!"
+      User.loggedin(current_user)
+    end
+  end
 
 end
 # User.find_or_create_by(name: new_user_name, age: new_user_age,
