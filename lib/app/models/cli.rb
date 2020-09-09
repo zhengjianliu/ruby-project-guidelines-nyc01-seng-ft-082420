@@ -5,8 +5,12 @@ require_relative 'appointment.rb'
 
 def start
   puts "WELCOME!!!"
+  loggedin
+end
+
+def loggedin
   prompt = TTY::Prompt.new
-  input = prompt.select("Would you to login or sign up?", %w(Login Signup))
+  input = prompt.select("Would you to login or sign up?", %w(Login Signup Exit))
 
   if input == "Login"
     ## This is here after user login into their account!!
@@ -23,10 +27,9 @@ def start
   elsif input == "Signup"
     new_user = User.signup
     new_user.welcome
-
-
+  else
+    puts "GOOD BYE!!!"
   end
-
 end
 
 

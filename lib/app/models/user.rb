@@ -9,8 +9,8 @@ class User < ActiveRecord::Base
     user_name = prompt.ask("Username: ")
     user_password =  prompt.mask("Password: ")
     current_user = User.find_by(name: user_name, password: user_password)
-
-     if current_user
+    # binding.pry
+     if current_user && current_user.name != nil
        current_user
      else
        puts "\n------------------------------------------"
@@ -58,7 +58,6 @@ class User < ActiveRecord::Base
       puts "Your new event #{new_event_name} is now created!"
       Appointment.create(user_id: self.id, event_id: new_event.id)
     else
-      puts "GO BACK!"
     end
   end
 
