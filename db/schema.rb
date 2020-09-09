@@ -18,6 +18,7 @@ ActiveRecord::Schema.define(version: 2020_09_08_175625) do
   end
 
   create_table "events", force: :cascade do |t|
+    t.string "category"
     t.string "name"
     t.string "location"
     t.integer "date"

@@ -44,6 +44,30 @@ class User < ActiveRecord::Base
 
   # binding.pry
 
+  def create_event
+    prompt = TTY::Prompt.new
+    input = prompt.select("Do you want to create a new event?", %w(YES NO))
+    if input == "YES"
+      new_event_name = prompt.ask("Event Name: ")
+      new_event_category = prompt.ask("Event Category: ")
+      new_event_location = prompt.ask("Event Location: ")
+      new_event_date = prompt.ask("Event Date: ")
+      new_event_time = prompt.ask("Event Time: ")
+      new_event_description = prompt.ask("Event Description: ")
+      new_event = Event.find_or_create_by(name: new_event_name, category: new_event_category,location: new_event_location,
+      date: new_event_time, time: new_event_time, description: new_event_description)
+      puts "Your new event #{new_event_name} is now created!"
+
+      Appointment.create(user_id: self.id, event_id: new_event.id)
+    else
+      puts "GO BACK!"
+
+    end
+  end
+
+  
+  # binding.pry
+
 end
 
 
