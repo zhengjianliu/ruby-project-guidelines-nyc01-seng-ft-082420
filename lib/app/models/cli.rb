@@ -12,17 +12,20 @@ def start
     ## This is here after user login into their account!!
     current_user = User.login
     current_user.welcome
+    current_user.display_all_appointments
+    # binding.pry
     current_user.create_event
-    # Appointment.show_event(current_user)
+
 
   elsif input == "Signup"
     new_user = User.signup
     new_user.welcome
 
+
   end
 
 end
 
- # binding.pry
+
 
 start

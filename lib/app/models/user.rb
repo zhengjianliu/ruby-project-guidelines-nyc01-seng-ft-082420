@@ -1,3 +1,4 @@
+require_relative 'event.rb'
 class User < ActiveRecord::Base
   has_many :appointments
   has_many :events, through: :appointments
@@ -42,8 +43,6 @@ class User < ActiveRecord::Base
     puts "Hey #{self.name}! Welcome to the BOOKING SYSTEM!!"
   end
 
-  # binding.pry
-
   def create_event
     prompt = TTY::Prompt.new
     input = prompt.select("Do you want to create a new event?", %w(YES NO))
@@ -57,15 +56,21 @@ class User < ActiveRecord::Base
       new_event = Event.find_or_create_by(name: new_event_name, category: new_event_category,location: new_event_location,
       date: new_event_time, time: new_event_time, description: new_event_description)
       puts "Your new event #{new_event_name} is now created!"
-
       Appointment.create(user_id: self.id, event_id: new_event.id)
     else
       puts "GO BACK!"
-
     end
   end
 
-  
+  def display_all_appointments
+    appts = Appointment.all.select{|appt| appt if appt.user_id == self.id}.map{ |appt| appt.event_id}
+    appts.each{ |a_id|
+      Event.all.select{ |event| puts "#{event.name}" if event.id == a_id  }
+    }
+
+  end
+
+
   # binding.pry
 
 end
