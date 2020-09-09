@@ -19,6 +19,19 @@ class User < ActiveRecord::Base
      end
   end
 
+  def self.loggedin(current_user)
+    prompt = TTY::Prompt.new
+    choice = ["View & edit Appointment", "Create Appointment", "Log out"]
+    input = prompt.select(current_user.welcome, choice)
+    if input == "View & edit Appointment"
+      current_user.display_all_appointments
+    elsif input ==  "Create Appointment"
+      current_user.create_event
+    elsif input == "Log out"
+      puts "Goodbye!"
+    end
+  end
+
   def self.signup
     prompt = TTY::Prompt.new
     new_user_name = prompt.ask("Please input your name: ")
@@ -58,6 +71,7 @@ class User < ActiveRecord::Base
       puts "Your new event #{new_event_name} is now created!"
       Appointment.create(user_id: self.id, event_id: new_event.id)
     else
+
     end
   end
 
@@ -68,6 +82,8 @@ class User < ActiveRecord::Base
     appts.each{ |a_id| Event.all.select{ |event| all_appts_name << event.name if event.id == a_id}}
     prompt.select("Select and and view detail of you appointment:", all_appts_name)
   end
+
+
 end
 # User.find_or_create_by(name: new_user_name, age: new_user_age,
 #   phone: new_user_phone, occupation: new_user_occupation, password: new_user_password)
