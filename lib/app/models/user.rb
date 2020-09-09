@@ -63,19 +63,13 @@ class User < ActiveRecord::Base
   end
 
   def display_all_appointments
+    prompt = TTY::Prompt.new
     appts = Appointment.all.select{|appt| appt if appt.user_id == self.id}.map{ |appt| appt.event_id}
-    appts.each{ |a_id|
-      Event.all.select{ |event| puts "#{event.name}" if event.id == a_id  }
-    }
-
+    all_appts_name = []
+    appts.each{ |a_id| Event.all.select{ |event| all_appts_name << event.name if event.id == a_id}}
+    prompt.select("Select and and view detail of you appointment:", all_appts_name)
   end
-
-
-  # binding.pry
-
 end
-
-
 # User.find_or_create_by(name: new_user_name, age: new_user_age,
 #   phone: new_user_phone, occupation: new_user_occupation, password: new_user_password)
 # User.login
