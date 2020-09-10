@@ -39,10 +39,17 @@ class User < ActiveRecord::Base
     end
   end
 
+
+
+
+
+
+
+
   def self.signup
     prompt = TTY::Prompt.new
-    new_user_name = prompt.ask("Please input your name: ")
-    new_user_phone = prompt.ask("Please input your phone number: ")
+    new_user_name = prompt.ask("Please input your name: ",required: true)
+    new_user_phone = prompt.ask("Please input your phone number: ",required: true)
 
     if User.find_by(name:new_user_name, phone: new_user_phone)
       puts "\n------------------------------------------"
@@ -51,7 +58,7 @@ class User < ActiveRecord::Base
     else
       new_user_age = prompt.ask("Please input your age: ")
       new_user_occupation = prompt.ask("Please input your occupation: ")
-      new_user_password = prompt.mask("Please input your password: ")
+      new_user_password = prompt.mask("Please input your password: ",required: true)
       User.create(name: new_user_name, age: new_user_age,
         phone: new_user_phone, occupation: new_user_occupation, password: new_user_password)
       User.login
@@ -89,7 +96,7 @@ class User < ActiveRecord::Base
     Occupation: #{current_user.occupation}
     "
 
-    input = prompt.select("Do you want to edit your info?", %w(YES NO))
+    input = prompt.select("Do you want to edit your info?", %w(NO YES))
     if input == "YES"
       choice =["User Name", "Phone Number","Age", "Occupation","Reset Password"]
       edit_info = prompt.multi_select("Which info you want edit?", choice,symbols: { marker: "👉" })
