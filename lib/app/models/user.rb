@@ -66,7 +66,8 @@ class User < ActiveRecord::Base
       User.loggedin(current_user)
     else
     cancel_this = prompt.select("Which event would you like to cancel?", all_my_event)
-    binding.pry
+    
+    #binding.pry
     Event.all.select{ |event| event.destroy if event.name == cancel_this}
     
     User.loggedin(current_user)
@@ -295,7 +296,7 @@ class User < ActiveRecord::Base
       puts "No events is available!"
       User.loggedin(current_user)
     else
-      selected_event = prompt.select("Choose your destiny?", all_event, symbols: { marker: "👉" })
+      selected_event = prompt.select("Choose an event", all_event, symbols: { marker: "👉" }, filter: true)
 
       Event.all.find{ |event|
         if selected_event == event.name
