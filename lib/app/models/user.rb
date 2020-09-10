@@ -244,7 +244,7 @@ class User < ActiveRecord::Base
         Description:
         #{event.description.upcase}
         "
-      elsif event.name == nil
+      elsif event.name == nil ## fix this problem.. please alex.
         puts "You have no appointment scheduled!"
         User.loggedin(current_user)
       end} }
