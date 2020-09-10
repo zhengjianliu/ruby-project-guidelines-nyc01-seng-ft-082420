@@ -23,7 +23,6 @@ class User < ActiveRecord::Base
   def cancel_event
       prompt = TTY::Prompt.new
       current_user = self
-      #event_names = current_user.events.find_all{|event|event.name if event.host_id == self.id}
       all_my_event = []
       Event.all.select{|event|
         if event.host_id == self.id
