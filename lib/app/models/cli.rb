@@ -5,9 +5,10 @@ require_relative 'appointment.rb'
 
 def start
   puts "WELCOME!!!"
-  prompt = TTY::Prompt.new
+  notice = Pastel.new.cyan.detach
+  prompt = TTY::Prompt.new(active_color: notice)
   input = prompt.select("Would you to login or sign up?",
-    %w(Login Signup Exit),symbols: { marker: "👉" })
+    %w(Login Signup Exit),symbols: { marker: "👉" },help_color: :cyan)
 
   if input == "Login"
     ## This is here after user login into their account!!

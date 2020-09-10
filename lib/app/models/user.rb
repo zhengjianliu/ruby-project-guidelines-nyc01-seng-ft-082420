@@ -4,10 +4,11 @@ class User < ActiveRecord::Base
   has_many :events, through: :appointments
 
   def self.login
-    prompt = TTY::Prompt.new
+    notice = Pastel.new.cyan.detach
+    prompt = TTY::Prompt.new(active_color: notice)
     puts "Please enter your username and password"
-    user_name = prompt.ask("Username: ")
-    user_password =  prompt.mask("Password: ")
+    user_name = prompt.ask("Username: ",required: true)
+    user_password =  prompt.mask("Password: ",required: true)
     current_user = User.find_by(name: user_name, password: user_password)
      if current_user && current_user.name != nil
        current_user
@@ -20,7 +21,8 @@ class User < ActiveRecord::Base
   end
 
   def cancel_event
-      prompt = TTY::Prompt.new
+      notice = Pastel.new.cyan.detach
+      prompt = TTY::Prompt.new(active_color: notice)
       current_user = self
       all_my_event = []
       Event.all.select{|event|
@@ -51,10 +53,11 @@ class User < ActiveRecord::Base
 
 
   def self.loggedin(current_user)
-    prompt = TTY::Prompt.new
+    notice = Pastel.new.cyan.detach
+    prompt = TTY::Prompt.new(active_color: notice)
     choice = ["Edit & View Personal info", "View & edit Appointment", "Create New Event", "Cancel Your Event",
       "View & Join Event", "Login to another account","Log out"]
-    input = prompt.select(current_user.welcome, choice, symbols: { marker: "👉" })
+    input = prompt.select(current_user.welcome, choice, symbols: { marker: "👉" }, help_color: :cyan)
     if input == "View & edit Appointment"
       current_user.display_all_appointments
     elsif input == "Edit & View Personal info"
@@ -85,7 +88,8 @@ class User < ActiveRecord::Base
 
 
   def self.signup
-    prompt = TTY::Prompt.new
+    notice = Pastel.new.cyan.detach
+    prompt = TTY::Prompt.new(active_color: notice)
     new_user_name = prompt.ask("Please input your name: ",required: true)
     new_user_phone = prompt.ask("Please input your phone number: ",required: true)
 
@@ -94,8 +98,8 @@ class User < ActiveRecord::Base
       puts "\nYour name and phone number is already registered in the system\nPlease login: "
       User.login
     else
-      new_user_age = prompt.ask("Please input your age: ")
-      new_user_occupation = prompt.ask("Please input your occupation: ")
+      new_user_age = prompt.ask("Please input your age: ",required: true)
+      new_user_occupation = prompt.ask("Please input your occupation: ",required: true)
       new_user_password = prompt.mask("Please input your password: ",required: true)
       User.create(name: new_user_name, age: new_user_age,
         phone: new_user_phone, occupation: new_user_occupation, password: new_user_password)
@@ -124,7 +128,8 @@ class User < ActiveRecord::Base
 
 
   def view_edit_personal_info
-    prompt = TTY::Prompt.new
+    notice = Pastel.new.cyan.detach
+    prompt = TTY::Prompt.new(active_color: notice)
     current_user = self
     puts "
     UserName: #{current_user.name.colorize(:green)}
@@ -136,7 +141,7 @@ class User < ActiveRecord::Base
     input = prompt.select("Do you want to edit your info?", %w(NO YES))
     if input == "YES"
       choice =["User Name", "Phone Number","Age", "Occupation","Reset Password"]
-      edit_info = prompt.multi_select("Which info you want edit?", choice,symbols: { marker: "👉" })
+      edit_info = prompt.multi_select("Which info you want edit?", choice,symbols: { marker: "👉" }, help_color: :cyan)
 
       edit_info.each{ |info|
         if info == "User Name"
@@ -222,15 +227,16 @@ class User < ActiveRecord::Base
 
   def create_event
     current_user = self
-    prompt = TTY::Prompt.new
-    input = prompt.select("Do you want to create a new event?", %w(YES NO),symbols: { marker: "👉" })
+    notice = Pastel.new.cyan.detach
+    prompt = TTY::Prompt.new(active_color: notice)
+    input = prompt.select("Do you want to create a new event?", %w(YES NO),symbols: { marker: "👉" }, help_color: :cyan)
     if input == "YES"
-      new_event_name = prompt.ask("Event Name: ")
-      new_event_category = prompt.ask("Event Category: ")
-      new_event_location = prompt.ask("Event Location: ")
-      new_event_date = prompt.ask("Event Date: ")
-      new_event_time = prompt.ask("Event Time: ")
-      new_event_description = prompt.ask("Event Description: ")
+      new_event_name = prompt.ask("Event Name: ", required: true)
+      new_event_category = prompt.ask("Event Category: ", required: true)
+      new_event_location = prompt.ask("Event Location: ", required: true)
+      new_event_date = prompt.ask("Event Date: ", required: true)
+      new_event_time = prompt.ask("Event Time: ", required: true)
+      new_event_description = prompt.ask("Event Description: ", required: true)
       new_event = Event.find_or_create_by(host_id: self.id, name: new_event_name, category: new_event_category,location: new_event_location,
       date: new_event_time, time: new_event_time, description: new_event_description)
       puts "Your new event #{new_event_name} is now created!"
@@ -256,7 +262,8 @@ class User < ActiveRecord::Base
 
   def display_all_appointments
     current_user = self
-    prompt = TTY::Prompt.new
+    notice = Pastel.new.cyan.detach
+    prompt = TTY::Prompt.new(active_color: notice)
     appts = Appointment.all.select{|appt| appt if appt.user_id == self.id}.map{ |appt| appt.event_id}  ##[5,6] all appt id
     all_appts_name = []
     appts.each{ |a_id| Event.all.select{ |event| all_appts_name << event.name if event.id == a_id}}
@@ -264,7 +271,7 @@ class User < ActiveRecord::Base
       puts "You have no appointment scheduled!"
       User.loggedin(current_user)
     else
-      selected_appt = prompt.select("Select and and view detail of you appointment:", all_appts_name, symbols: { marker: "👉" })
+      selected_appt = prompt.select("Select and and view detail of you appointment:", all_appts_name, symbols: { marker: "👉" }, help_color: :cyan)
 
       appts.find{ |a| Event.all.select{|event|
         if event.name == selected_appt
@@ -284,7 +291,7 @@ class User < ActiveRecord::Base
         end} }
 
       choice = ["GO BACK","Cancel this appointment"]
-      input = prompt.select("---------------------", choice, symbols: { marker: "👉" })
+      input = prompt.select("---------------------", choice, symbols: { marker: "👉" }, help_color: :cyan)
 
       if input == "Cancel this appointment"
         Event.all.find{|event|
@@ -318,7 +325,8 @@ class User < ActiveRecord::Base
 
   def view_join_event
       current_user = self
-      prompt = TTY::Prompt.new
+      notice = Pastel.new.cyan.detach
+      prompt = TTY::Prompt.new(active_color: notice)
       all_event = []
       Event.all.each{ |event|
         all_event << event.name
@@ -327,7 +335,7 @@ class User < ActiveRecord::Base
         puts "No events is available!"
         User.loggedin(current_user)
       else
-        selected_event = prompt.select("Choose an event", all_event, symbols: { marker: "👉" }, filter: true)
+        selected_event = prompt.select("Choose an event", all_event, symbols: { marker: "👉" },help_color: :cyan, filter: true)
 
         Event.all.find{ |event|
           if selected_event == event.name
@@ -344,7 +352,7 @@ class User < ActiveRecord::Base
           end
         }
         choice = ["GO BACK","Join this appointment"]
-        input = prompt.select("---------------------", choice, symbols: { marker: "👉" })
+        input = prompt.select("---------------------", choice, symbols: { marker: "👉" },help_color: :cyan)
         if input == "Join this appointment"
           Event.all.find{|event|
             if event.name == selected_event
