@@ -20,7 +20,25 @@ class User < ActiveRecord::Base
 
   end
 
-
+  def cancel_event
+      prompt = TTY::Prompt.new
+      current_user = self
+      all_my_event = []
+      Event.all.select{|event|
+        if event.host_id == self.id
+          all_my_event << event.name
+        end
+      }
+      if all_my_event.count == 0
+        puts "You have no events!"
+        User.loggedin(current_user)
+      else
+      cancel_this = prompt.select("Which event would you like to cancel?", all_my_event)
+      # binding.pry
+      Event.all.select{ |event| event.destroy if event.name == cancel_this}
+      User.loggedin(current_user)
+      end
+    end
 
 
 
@@ -39,10 +57,10 @@ class User < ActiveRecord::Base
       current_user.view_edit_personal_info
     elsif input ==  "Create New Event"
       current_user.create_event
-    elsif input == "View & Join Event"
-      current_user.view_join_event ##alex is working on this.
     elsif input == "Cancel Your Event"
       current_user.cancel_event
+    elsif input == "View & Join Event"
+      current_user.view_join_event ##alex is working on this.
     elsif input == "Login to another account"
       start
     elsif input == "Log out"
@@ -50,29 +68,17 @@ class User < ActiveRecord::Base
       start
     end
   end
-  
-  def cancel_event
-    prompt = TTY::Prompt.new
-    current_user = self
-    #event_names = current_user.events.find_all{|event|event.name if event.host_id == self.id}
-    all_my_event = []
-    Event.all.select{|event|
-      if event.host_id == self.id
-        all_my_event << event.name
-      end
-    }
-    if all_my_event.count == 0
-      puts "You have no events!"
-      User.loggedin(current_user)
-    else
-    cancel_this = prompt.select("Which event would you like to cancel?", all_my_event)
-    
-    #binding.pry
-    Event.all.select{ |event| event.destroy if event.name == cancel_this}
-    
-    User.loggedin(current_user)
-    end
-  end
+
+
+
+
+
+
+
+
+
+
+
 
   def self.signup
     prompt = TTY::Prompt.new
@@ -199,6 +205,18 @@ class User < ActiveRecord::Base
   end
 
 
+
+
+
+
+
+
+
+
+
+
+
+
   def create_event
     current_user = self
     prompt = TTY::Prompt.new
@@ -222,6 +240,17 @@ class User < ActiveRecord::Base
     end
   end
 
+
+
+
+
+
+
+
+
+
+
+
   def display_all_appointments
     current_user = self
     prompt = TTY::Prompt.new
@@ -232,7 +261,7 @@ class User < ActiveRecord::Base
       puts "You have no appointment scheduled!"
       User.loggedin(current_user)
     else
-      selected_appt = prompt.select("Select and and view detail of you appointment:", all_appts_name, symbols: { marker: "👉" })
+      selected_appt = prompt.select("Select and and view detail of you appointment:", all_appts_name, symbols: { marker: "👉" }, filter: true)
 
       appts.find{ |a| Event.all.select{|event|
         if event.name == selected_appt
