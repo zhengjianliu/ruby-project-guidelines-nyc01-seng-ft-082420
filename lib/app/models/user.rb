@@ -30,7 +30,7 @@ class User < ActiveRecord::Base
   def self.loggedin(current_user)
     prompt = TTY::Prompt.new
     choice = ["Edit & View Personal info", "View & edit Appointment", "Create New Event", "Cancel Your Event",
-      "Seach & Join Event", "Login to another account","Log out"]
+      "View & Join Event", "Login to another account","Log out"]
     input = prompt.select(current_user.welcome, choice, symbols: { marker: "👉" })
     if input == "View & edit Appointment"
       current_user.display_all_appointments
@@ -38,8 +38,8 @@ class User < ActiveRecord::Base
       current_user.view_edit_personal_info
     elsif input ==  "Create New Event"
       current_user.create_event
-    elsif input == "Seach & Join Event"
-      current_user.search_view_join_event ##alex is working on this.
+    elsif input == "View & Join Event"
+      current_user.view_join_event ##alex is working on this.
     elsif input == "Login to another account"
       start
     elsif input == "Log out"
@@ -290,16 +290,48 @@ class User < ActiveRecord::Base
   #   # prompt.select("Choose your destiny?", warriors, filter: true)
   # end
 
-  def join_event
+  def view_join_event
     current_user = self
     prompt = TTY::Prompt.new
     all_event = []
     Event.all.each{ |event|
       all_event << event.name
-      binding.pry
     }
-    # prompt.select("Choose your destiny?", warriors, filter: true)
+
+    selected_event = prompt.select("Choose your destiny?", all_event, symbols: { marker: "👉" })
+
+    Event.all.find{ |event|
+      if selected_event == event.name
+        puts "
+        The Event Info:
+        ---------------------
+        Event: #{event.name.upcase}
+        Category: #{event.category.upcase}
+        Location: #{event.location.upcase}
+        Date: #{event.date} | Time: #{event.time}
+        Description:
+        #{event.description.upcase}
+        "
+      end
+    }
+    choice = ["GO BACK","Join this appointment"]
+    input = prompt.select("---------------------", choice, symbols: { marker: "👉" })
+
+    if input == "Join this appointment"
+      Event.all.find{|event|
+        if event.name == selected_event
+          event.id
+          Appointment.create(user_id: self.id, event_id: event.id)
+
+          User.loggedin(current_user)
+        end
+      }
+    elsif input == "GO BACK"
+      puts "GO BACK!"
+      User.loggedin(current_user)
+    end
   end
 
 
 end  ## this end is for the entire class.
+  # prompt.select("Choose your destiny?", warriors, filter: true)
