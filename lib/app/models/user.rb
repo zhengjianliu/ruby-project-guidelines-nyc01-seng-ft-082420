@@ -317,48 +317,48 @@ class User < ActiveRecord::Base
 
 
   def view_join_event
-    current_user = self
-    prompt = TTY::Prompt.new
-    all_event = []
-    Event.all.each{ |event|
-      all_event << event.name
-    }
-    if all_event.count == 0
-      puts "No events is available!"
-      User.loggedin(current_user)
-    else
-      selected_event = prompt.select("Choose your destiny?", all_event, symbols: { marker: "👉" })
-
-      Event.all.find{ |event|
-        if selected_event == event.name
-          puts "
-          The Event Info:
-          ---------------------
-          Event: #{event.name.upcase.colorize(:green)}
-          Category: #{event.category.upcase.colorize(:green)}
-          Location: #{event.location.upcase.colorize(:green)}
-          Date: #{event.date.colorize(:green)} | Time: #{event.time.colorize(:green)}
-          Description:
-          #{event.description.upcase.colorize(:green)}
-          "
-        end
+      current_user = self
+      prompt = TTY::Prompt.new
+      all_event = []
+      Event.all.each{ |event|
+        all_event << event.name
       }
-      choice = ["GO BACK","Join this appointment"]
-      input = prompt.select("---------------------", choice, symbols: { marker: "👉" })
-      if input == "Join this appointment"
-        Event.all.find{|event|
-          if event.name == selected_event
-            event.id
-            Appointment.find_or_create_by(user_id: self.id, event_id: event.id)
-            User.loggedin(current_user)
+      if all_event.count == 0
+        puts "No events is available!"
+        User.loggedin(current_user)
+      else
+        selected_event = prompt.select("Choose an event", all_event, symbols: { marker: "👉" }, filter: true)
+
+        Event.all.find{ |event|
+          if selected_event == event.name
+            puts "
+            The Event Info:
+            ---------------------
+            Event: #{event.name.upcase.colorize(:green)}
+            Category: #{event.category.upcase.colorize(:green)}
+            Location: #{event.location.upcase.colorize(:green)}
+            Date: #{event.date.colorize(:green)} | Time: #{event.time.colorize(:green)}
+            Description:
+            #{event.description.upcase.colorize(:green)}
+            "
           end
         }
-      elsif input == "GO BACK"
-        puts "GO BACK!"
-        User.loggedin(current_user)
+        choice = ["GO BACK","Join this appointment"]
+        input = prompt.select("---------------------", choice, symbols: { marker: "👉" })
+        if input == "Join this appointment"
+          Event.all.find{|event|
+            if event.name == selected_event
+              event.id
+              Appointment.find_or_create_by(user_id: self.id, event_id: event.id)
+              User.loggedin(current_user)
+            end
+          }
+        elsif input == "GO BACK"
+          puts "GO BACK!"
+          User.loggedin(current_user)
+        end
       end
     end
-  end
 
 
 end  ## this end is for the entire class.
