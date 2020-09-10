@@ -21,11 +21,13 @@ class User < ActiveRecord::Base
 
   def self.loggedin(current_user)
     prompt = TTY::Prompt.new
-    choice = ["View & edit Appointment", "Create New Event", "Cancel Your Event",
+    choice = ["Edit & View Personal info", "View & edit Appointment", "Create New Event", "Cancel Your Event",
       "Seach & Join Event", "Login to another account","Log out"]
     input = prompt.select(current_user.welcome, choice, symbols: { marker: "👉" })
     if input == "View & edit Appointment"
       current_user.display_all_appointments
+    elsif input == "Edit & View Personal info"
+      current_user.view_edit_personal_info
     elsif input ==  "Create New Event"
       current_user.create_event
     elsif input == "Seach & Join Event"
@@ -61,6 +63,113 @@ class User < ActiveRecord::Base
     puts "\n"
     puts "Hey #{self.name}! Welcome to the BOOKING SYSTEM!!"
   end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  def view_edit_personal_info
+    prompt = TTY::Prompt.new
+    current_user = self
+    puts "
+    UserName: #{current_user.name}
+    Phone Number:#{current_user.phone}
+    Your Age: #{current_user.age}
+    Occupation: #{current_user.occupation}
+    "
+
+    input = prompt.select("Do you want to edit your info?", %w(YES NO))
+    if input == "YES"
+      choice =["User Name", "Phone Number","Age", "Occupation","Reset Password"]
+      edit_info = prompt.multi_select("Which info you want edit?", choice,symbols: { marker: "👉" })
+
+      edit_info.each{ |info|
+        if info == "User Name"
+          current_user.name = prompt.ask("Please enter new user name: ")
+           while current_user.name == nil do
+             puts "Please try again!!!"
+             current_user.name = prompt.ask("Please enter new user name: ")
+           end
+           current_user.save
+
+        elsif info == "Phone Number"
+          new_phone = prompt.ask("Please enter new phone number: ")
+          while new_phone == nil do
+            puts "Please try again!!!"
+            new_phone = prompt.ask("Please enter new phone number: ")
+            current_user.phone = new_phone.to_i
+          end
+          current_user.phone = new_phone.to_i
+          current_user.save
+
+        elsif info == "Age"
+          new_age = prompt.ask("Please enter age: ")
+          while new_age == nil do
+            puts "Please try again!!!"
+            new_age = prompt.ask("Please enter age: ")
+            current_user.age = new_age.to_i
+          end
+          current_user.age = new_age.to_i
+          current_user.save
+
+        elsif info == "Occupation"
+          current_user.occupation = prompt.ask("Please enter new occupation: ")
+          while current_user.occupation == nil do
+            puts "Please try again!!!"
+            current_user.occupation = prompt.ask("Please enter new occupation: ")
+          end
+          current_user.save
+
+        elsif info == "Reset Password"
+          entry_original_password = prompt.ask("Please enter original password: ")
+          i = 0
+          while entry_original_password != current_user.password
+            i+=1
+            puts "Sorry, invalid entry! try again"
+            entry_original_password = prompt.ask("##{i} / 5 attempt. Please enter original password: ")
+            if i == 6
+              puts "Sorry, try again next time."
+              User.loggedin(current_user)
+            end
+          end
+
+          current_user.password = prompt.ask("Please enter new password: ")
+          while current_user.password == nil do
+            puts "Please try again!!!"
+            current_user.password = prompt.ask("Please enter new password: ")
+          end
+          current_user.save
+        end
+      }
+      User.loggedin(current_user)
+    else
+      User.loggedin(current_user)
+    end
+  end
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   def create_event
     current_user = self
