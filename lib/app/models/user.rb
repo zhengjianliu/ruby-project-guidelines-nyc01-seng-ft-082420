@@ -1,3 +1,4 @@
+require 'pry'
 require_relative 'event.rb'
 class User < ActiveRecord::Base
   has_many :appointments
@@ -235,8 +236,8 @@ class User < ActiveRecord::Base
     appts = Appointment.all.select{|appt| appt if appt.user_id == self.id}.map{ |appt| appt.event_id}  ##[5,6] all appt id
     all_appts_name = []
     appts.each{ |a_id| Event.all.select{ |event| all_appts_name << event.name if event.id == a_id}}
+    binding.pry
     selected_appt = prompt.select("Select and and view detail of you appointment:", all_appts_name, symbols: { marker: "👉" })
-
     appts.find{ |a| Event.all.select{|event|
       if event.name == selected_appt
         puts "
@@ -249,7 +250,7 @@ class User < ActiveRecord::Base
         Description:
         #{event.description.upcase}
         "
-      elsif event.name == nil ## fix this problem.. please alex.
+      elsif all_appts_name.count == 0 ## fix this problem.. please alex.
         puts "You have no appointment scheduled!"
         User.loggedin(current_user)
       end} }
@@ -264,6 +265,7 @@ class User < ActiveRecord::Base
           Appointment.all.find{|appt|
             if appt.event_id == event.id
               appt.destroy
+              #event.destroy
             end
           }
         end
