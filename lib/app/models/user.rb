@@ -119,8 +119,9 @@ class User < ActiveRecord::Base
       #     User.loggedin(current_user)
       Event.all.find{|event|
         if event.name == selected_appt
+          event.id
           Appointment.all.find{|appt|
-            if appt.id == event.id
+            if appt.event_id == event.id
               appt.destroy
             end
           }
