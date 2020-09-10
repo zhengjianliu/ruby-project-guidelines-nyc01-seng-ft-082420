@@ -76,8 +76,8 @@ class User < ActiveRecord::Base
       new_event = Event.find_or_create_by(name: new_event_name, category: new_event_category,location: new_event_location,
       date: new_event_time, time: new_event_time, description: new_event_description)
       puts "Your new event #{new_event_name} is now created!"
-      User.loggedin(current_user)
       Appointment.create(user_id: self.id, event_id: new_event.id)
+      User.loggedin(current_user)
 
     else
       puts "GO BACK!"
@@ -88,7 +88,7 @@ class User < ActiveRecord::Base
   def display_all_appointments
     current_user = self
     prompt = TTY::Prompt.new
-    appts = Appointment.all.select{|appt| appt if appt.user_id == self.id}.map{ |appt| appt.event_id}
+    appts = Appointment.all.select{|appt| appt if appt.user_id == self.id}.map{ |appt| appt.event_id}  ##[5,6] all appt id
     all_appts_name = []
     appts.each{ |a_id| Event.all.select{ |event| all_appts_name << event.name if event.id == a_id}}
     selected_appt = prompt.select("Select and and view detail of you appointment:", all_appts_name, symbols: { marker: "👉" })
@@ -111,21 +111,27 @@ class User < ActiveRecord::Base
 
     choice = ["GO BACK","Cancel this appointment"]
     input = prompt.select("---------------------", choice, symbols: { marker: "👉" })
-    cancel_appt = Appointment.all.select{|appt| appt if appt.user_id == self.id}.map{ |appt| appt.id}
-    if input == "Cancel this appointment"
-      cancel_appt.find{ |a| Appointment.all.select{|appt|
-        if appt.id == a
-          appt.destroy
-          User.loggedin(current_user)
-        end} }
 
+    if input == "Cancel this appointment"
+      # cancel_appt.find{ |a| Appointment.all.select{|appt|
+      #   if appt.id == selected_appt ## select_appt == event.name
+      #     appt.destroy
+      #     User.loggedin(current_user)
+      Event.all.find{|event|
+        if event.name == selected_appt
+          Appointment.all.find{|appt|
+            if appt.id == event.id
+              appt.destroy
+            end
+          }
+        end
+      }
+      User.loggedin(current_user)
 
     elsif input == "GO BACK"
       puts "GO BACK!"
       User.loggedin(current_user)
-
     end
-
 
   end
 end
