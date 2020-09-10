@@ -4,7 +4,14 @@ require_relative 'event.rb'
 require_relative 'appointment.rb'
 
 def start
-  puts "WELCOME!!!"
+  Catpix::print_image "lib/app/imgs/hdr.jpg",
+  :limit_x => 1.0,
+  :limit_y => 0,
+  :center_x => true,
+  :center_y => true,
+  :bg => "white",
+  :bg_fill => false,
+  :resolution => "high"   
   prompt = TTY::Prompt.new
   input = prompt.select("Would you to login or sign up?",
     %w(Login Signup Exit),symbols: { marker: "👉" })

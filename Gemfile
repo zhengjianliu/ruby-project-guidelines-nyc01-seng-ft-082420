@@ -8,3 +8,4 @@ gem "require_all"
 gem "tty-prompt"
 gem 'rake'
 gem 'colorize'
+gem 'catpix'
