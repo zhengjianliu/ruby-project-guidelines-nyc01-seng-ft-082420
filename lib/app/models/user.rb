@@ -34,9 +34,14 @@ class User < ActiveRecord::Base
         User.loggedin(current_user)
       else
       cancel_this = prompt.select("Which event would you like to cancel?", all_my_event)
+      input = prompt.yes?("Are you sure you want to delete this event?")
+      if input == true
       # binding.pry
       Event.all.select{ |event| event.destroy if event.name == cancel_this}
       User.loggedin(current_user)
+      else
+        User.loggedin(current_user)
+      end
       end
     end
 
