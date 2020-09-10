@@ -23,6 +23,5 @@ def start
   end
 
 end
-
 start
-# binding.pry
+#binding.pry

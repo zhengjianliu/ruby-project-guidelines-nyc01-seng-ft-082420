@@ -41,6 +41,8 @@ class User < ActiveRecord::Base
       current_user.create_event
     elsif input == "View & Join Event"
       current_user.view_join_event ##alex is working on this.
+    elsif input == "Cancel Your Event"
+      current_user.cancel_event
     elsif input == "Login to another account"
       start
     elsif input == "Log out"
@@ -48,17 +50,28 @@ class User < ActiveRecord::Base
       start
     end
   end
-
-
-
-
-
-
-
-
-
-
-
+  
+  def cancel_event
+    prompt = TTY::Prompt.new
+    current_user = self
+    #event_names = current_user.events.find_all{|event|event.name if event.host_id == self.id}
+    all_my_event = []
+    Event.all.select{|event|
+      if event.host_id == self.id
+        all_my_event << event.name
+      end
+    }
+    if all_my_event.count == 0
+      puts "You have no events!"
+      User.loggedin(current_user)
+    else
+    cancel_this = prompt.select("Which event would you like to cancel?", all_my_event)
+    binding.pry
+    Event.all.select{ |event| event.destroy if event.name == cancel_this}
+    
+    User.loggedin(current_user)
+    end
+  end
 
   def self.signup
     prompt = TTY::Prompt.new
@@ -185,18 +198,6 @@ class User < ActiveRecord::Base
   end
 
 
-
-
-
-
-
-
-
-
-
-
-
-
   def create_event
     current_user = self
     prompt = TTY::Prompt.new
@@ -208,7 +209,7 @@ class User < ActiveRecord::Base
       new_event_date = prompt.ask("Event Date: ")
       new_event_time = prompt.ask("Event Time: ")
       new_event_description = prompt.ask("Event Description: ")
-      new_event = Event.find_or_create_by(name: new_event_name, category: new_event_category,location: new_event_location,
+      new_event = Event.find_or_create_by(host_id: self.id, name: new_event_name, category: new_event_category,location: new_event_location,
       date: new_event_time, time: new_event_time, description: new_event_description)
       puts "Your new event #{new_event_name} is now created!"
       Appointment.create(user_id: self.id, event_id: new_event.id)
@@ -219,17 +220,6 @@ class User < ActiveRecord::Base
       User.loggedin(current_user)
     end
   end
-
-
-
-
-
-
-
-
-
-
-
 
   def display_all_appointments
     current_user = self
