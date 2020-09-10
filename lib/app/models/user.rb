@@ -19,6 +19,14 @@ class User < ActiveRecord::Base
      end
   end
 
+
+
+
+
+
+
+
+
   def self.loggedin(current_user)
     prompt = TTY::Prompt.new
     choice = ["Edit & View Personal info", "View & edit Appointment", "Create New Event", "Cancel Your Event",
@@ -31,13 +39,17 @@ class User < ActiveRecord::Base
     elsif input ==  "Create New Event"
       current_user.create_event
     elsif input == "Seach & Join Event"
-      # current_user.view_or_join_Event ##alex is working on this.
+      current_user.search_view_join_event ##alex is working on this.
     elsif input == "Login to another account"
       start
     elsif input == "Log out"
       puts "Goodbye! 👋"
     end
   end
+
+
+
+
 
 
 
@@ -201,6 +213,17 @@ class User < ActiveRecord::Base
     end
   end
 
+
+
+
+
+
+
+
+
+
+
+
   def display_all_appointments
     current_user = self
     prompt = TTY::Prompt.new
@@ -214,11 +237,12 @@ class User < ActiveRecord::Base
         puts "
         The Appointment Info:
         ---------------------
-        Event: #{event.name}
-        Category: #{event.category}
-        Location: #{event.location}
+        Event: #{event.name.upcase}
+        Category: #{event.category.upcase}
+        Location: #{event.location.upcase}
         Date: #{event.date} | Time: #{event.time}
-        Description: #{event.description}
+        Description:
+        #{event.description.upcase}
         "
       elsif event.name == nil
         puts "You have no appointment scheduled!"
@@ -229,10 +253,6 @@ class User < ActiveRecord::Base
     input = prompt.select("---------------------", choice, symbols: { marker: "👉" })
 
     if input == "Cancel this appointment"
-      # cancel_appt.find{ |a| Appointment.all.select{|appt|
-      #   if appt.id == selected_appt ## select_appt == event.name
-      #     appt.destroy
-      #     User.loggedin(current_user)
       Event.all.find{|event|
         if event.name == selected_appt
           event.id
@@ -251,4 +271,35 @@ class User < ActiveRecord::Base
     end
 
   end
-end
+
+
+
+
+
+
+
+  # def view_join_event
+  #   current_user = self
+  #   prompt = TTY::Prompt.new
+  #   all_event = []
+  #   Event.all.each{ |event|
+  #     all_event << event.name
+  #     binding.pry
+  #   }
+  #
+  #   # prompt.select("Choose your destiny?", warriors, filter: true)
+  # end
+
+  def join_event
+    current_user = self
+    prompt = TTY::Prompt.new
+    all_event = []
+    Event.all.each{ |event|
+      all_event << event.name
+      binding.pry
+    }
+    # prompt.select("Choose your destiny?", warriors, filter: true)
+  end
+
+
+end  ## this end is for the entire class.

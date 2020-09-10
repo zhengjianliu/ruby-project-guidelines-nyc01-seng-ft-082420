@@ -21,8 +21,8 @@ ActiveRecord::Schema.define(version: 2020_09_08_175625) do
     t.string "category"
     t.string "name"
     t.string "location"
-    t.integer "date"
-    t.integer "time"
+    t.string "date"
+    t.string "time"
     t.string "description"
   end
 
