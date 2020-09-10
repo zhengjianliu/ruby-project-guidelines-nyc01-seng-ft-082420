@@ -278,17 +278,9 @@ class User < ActiveRecord::Base
 
 
 
-  # def view_join_event
-  #   current_user = self
-  #   prompt = TTY::Prompt.new
-  #   all_event = []
-  #   Event.all.each{ |event|
-  #     all_event << event.name
-  #     binding.pry
-  #   }
-  #
-  #   # prompt.select("Choose your destiny?", warriors, filter: true)
-  # end
+
+
+
 
   def view_join_event
     current_user = self
@@ -316,13 +308,11 @@ class User < ActiveRecord::Base
     }
     choice = ["GO BACK","Join this appointment"]
     input = prompt.select("---------------------", choice, symbols: { marker: "👉" })
-
     if input == "Join this appointment"
       Event.all.find{|event|
         if event.name == selected_event
           event.id
-          Appointment.create(user_id: self.id, event_id: event.id)
-
+          Appointment.find_or_create_by(user_id: self.id, event_id: event.id)
           User.loggedin(current_user)
         end
       }
@@ -334,4 +324,3 @@ class User < ActiveRecord::Base
 
 
 end  ## this end is for the entire class.
-  # prompt.select("Choose your destiny?", warriors, filter: true)
