@@ -120,6 +120,7 @@ class User < ActiveRecord::Base
              puts "Please try again!!!"
              current_user.name = prompt.ask("Please enter new user name: ")
            end
+           puts "User Name Updated!"
            current_user.save
 
         elsif info == "Phone Number"
@@ -130,6 +131,7 @@ class User < ActiveRecord::Base
             current_user.phone = new_phone.to_i
           end
           current_user.phone = new_phone.to_i
+          puts "Phone Number Updated!"
           current_user.save
 
         elsif info == "Age"
@@ -140,6 +142,7 @@ class User < ActiveRecord::Base
             current_user.age = new_age.to_i
           end
           current_user.age = new_age.to_i
+          puts "Age Updated!"
           current_user.save
 
         elsif info == "Occupation"
@@ -148,26 +151,28 @@ class User < ActiveRecord::Base
             puts "Please try again!!!"
             current_user.occupation = prompt.ask("Please enter new occupation: ")
           end
+          puts "Occupation Updated!"
           current_user.save
 
         elsif info == "Reset Password"
-          entry_original_password = prompt.ask("Please enter original password: ")
+          entry_original_password = prompt.mask("Please enter original password: ")
           i = 0
           while entry_original_password != current_user.password
             i+=1
             puts "Sorry, invalid entry! try again"
-            entry_original_password = prompt.ask("##{i} / 5 attempt. Please enter original password: ")
+            entry_original_password = prompt.mask("##{i} / 5 attempt. Please enter original password: ")
             if i == 6
               puts "Sorry, try again next time."
               User.loggedin(current_user)
             end
           end
 
-          current_user.password = prompt.ask("Please enter new password: ")
+          current_user.password = prompt.mask("Please enter new password: ")
           while current_user.password == nil do
             puts "Please try again!!!"
-            current_user.password = prompt.ask("Please enter new password: ")
+            current_user.password = prompt.mask("Please enter new password: ")
           end
+          puts "Password Updated!"
           current_user.save
         end
       }
