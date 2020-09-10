@@ -9,7 +9,6 @@ class User < ActiveRecord::Base
     user_name = prompt.ask("Username: ")
     user_password =  prompt.mask("Password: ")
     current_user = User.find_by(name: user_name, password: user_password)
-    # binding.pry
      if current_user && current_user.name != nil
        current_user
      else
@@ -34,7 +33,6 @@ class User < ActiveRecord::Base
         User.loggedin(current_user)
       else
       cancel_this = prompt.select("Which event would you like to cancel?", all_my_event)
-      # binding.pry
       Event.all.select{ |event| event.destroy if event.name == cancel_this}
       User.loggedin(current_user)
       end
@@ -60,7 +58,7 @@ class User < ActiveRecord::Base
     elsif input == "Cancel Your Event"
       current_user.cancel_event
     elsif input == "View & Join Event"
-      current_user.view_join_event ##alex is working on this.
+      current_user.view_join_event
     elsif input == "Login to another account"
       start
     elsif input == "Log out"
@@ -96,7 +94,6 @@ class User < ActiveRecord::Base
       User.create(name: new_user_name, age: new_user_age,
         phone: new_user_phone, occupation: new_user_occupation, password: new_user_password)
       User.login
-      # binding.pry
     end
   end
 
@@ -301,7 +298,6 @@ class User < ActiveRecord::Base
         User.loggedin(current_user)
       end
     end
-    # binding.pry
   end
 
 
