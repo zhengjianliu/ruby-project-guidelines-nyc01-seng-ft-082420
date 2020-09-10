@@ -1,6 +1,7 @@
 class CreateEvents < ActiveRecord::Migration[6.0]
   def change
     create_table :events do |t|
+      t.integer :host_id
       t.string :category
       t.string :name
       t.string :location

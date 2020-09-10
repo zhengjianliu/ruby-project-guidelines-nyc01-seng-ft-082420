@@ -17,6 +17,7 @@ class User < ActiveRecord::Base
        puts "\nPlease check your password and username!\n\n"
        User.login
      end
+
   end
 
 
@@ -43,7 +44,8 @@ class User < ActiveRecord::Base
     elsif input == "Login to another account"
       start
     elsif input == "Log out"
-      puts "Goodbye! 👋"
+      puts "Goodbye!👋\n\n"
+      start
     end
   end
 
@@ -102,10 +104,10 @@ class User < ActiveRecord::Base
     prompt = TTY::Prompt.new
     current_user = self
     puts "
-    UserName: #{current_user.name}
-    Phone Number:#{current_user.phone}
-    Your Age: #{current_user.age}
-    Occupation: #{current_user.occupation}
+    UserName: #{current_user.name.colorize(:green)}
+    Phone Number:#{current_user.phone.to_s.colorize(:green)}
+    Your Age: #{current_user.age.to_s.colorize(:green)}
+    Occupation: #{current_user.occupation.colorize(:green)}
     "
 
     input = prompt.select("Do you want to edit your info?", %w(NO YES))
@@ -235,46 +237,51 @@ class User < ActiveRecord::Base
     appts = Appointment.all.select{|appt| appt if appt.user_id == self.id}.map{ |appt| appt.event_id}  ##[5,6] all appt id
     all_appts_name = []
     appts.each{ |a_id| Event.all.select{ |event| all_appts_name << event.name if event.id == a_id}}
-    selected_appt = prompt.select("Select and and view detail of you appointment:", all_appts_name, symbols: { marker: "👉" })
+    if all_appts_name.count == 0
+      puts "You have no appointment scheduled!"
+      User.loggedin(current_user)
+    else
+      selected_appt = prompt.select("Select and and view detail of you appointment:", all_appts_name, symbols: { marker: "👉" })
 
-    appts.find{ |a| Event.all.select{|event|
-      if event.name == selected_appt
-        puts "
-        The Appointment Info:
-        ---------------------
-        Event: #{event.name.upcase}
-        Category: #{event.category.upcase}
-        Location: #{event.location.upcase}
-        Date: #{event.date} | Time: #{event.time}
-        Description:
-        #{event.description.upcase}
-        "
-      elsif event.name == nil ## fix this problem.. please alex.
-        puts "You have no appointment scheduled!"
-        User.loggedin(current_user)
-      end} }
-
-    choice = ["GO BACK","Cancel this appointment"]
-    input = prompt.select("---------------------", choice, symbols: { marker: "👉" })
-
-    if input == "Cancel this appointment"
-      Event.all.find{|event|
+      appts.find{ |a| Event.all.select{|event|
         if event.name == selected_appt
-          event.id
-          Appointment.all.find{|appt|
-            if appt.event_id == event.id
-              appt.destroy
-            end
-          }
-        end
-      }
-      User.loggedin(current_user)
+          puts "
+          The Appointment Info:
+          ---------------------
+          Event: #{event.name.upcase.colorize(:green)}
+          Category: #{event.category.upcase.colorize(:green)}
+          Location: #{event.location.upcase.colorize(:green)}
+          Date: #{event.date.colorize(:green)} | Time: #{event.time.colorize(:green)}
+          Description:
+          #{event.description.upcase.colorize(:green)}
+          "
+        elsif event.name == nil ## fix this problem.. please alex.
+          puts "You have no appointment scheduled!"
+          User.loggedin(current_user)
+        end} }
 
-    elsif input == "GO BACK"
-      puts "GO BACK!"
-      User.loggedin(current_user)
+      choice = ["GO BACK","Cancel this appointment"]
+      input = prompt.select("---------------------", choice, symbols: { marker: "👉" })
+
+      if input == "Cancel this appointment"
+        Event.all.find{|event|
+          if event.name == selected_appt
+            event.id
+            Appointment.all.find{|appt|
+              if appt.event_id == event.id
+                appt.destroy
+              end
+            }
+          end
+        }
+        User.loggedin(current_user)
+
+      elsif input == "GO BACK"
+        puts "GO BACK!"
+        User.loggedin(current_user)
+      end
     end
-
+    # binding.pry
   end
 
 
@@ -294,36 +301,40 @@ class User < ActiveRecord::Base
     Event.all.each{ |event|
       all_event << event.name
     }
+    if all_event.count == 0
+      puts "No events is available!"
+      User.loggedin(current_user)
+    else
+      selected_event = prompt.select("Choose your destiny?", all_event, symbols: { marker: "👉" })
 
-    selected_event = prompt.select("Choose your destiny?", all_event, symbols: { marker: "👉" })
-
-    Event.all.find{ |event|
-      if selected_event == event.name
-        puts "
-        The Event Info:
-        ---------------------
-        Event: #{event.name.upcase}
-        Category: #{event.category.upcase}
-        Location: #{event.location.upcase}
-        Date: #{event.date} | Time: #{event.time}
-        Description:
-        #{event.description.upcase}
-        "
-      end
-    }
-    choice = ["GO BACK","Join this appointment"]
-    input = prompt.select("---------------------", choice, symbols: { marker: "👉" })
-    if input == "Join this appointment"
-      Event.all.find{|event|
-        if event.name == selected_event
-          event.id
-          Appointment.find_or_create_by(user_id: self.id, event_id: event.id)
-          User.loggedin(current_user)
+      Event.all.find{ |event|
+        if selected_event == event.name
+          puts "
+          The Event Info:
+          ---------------------
+          Event: #{event.name.upcase.colorize(:green)}
+          Category: #{event.category.upcase.colorize(:green)}
+          Location: #{event.location.upcase.colorize(:green)}
+          Date: #{event.date.colorize(:green)} | Time: #{event.time.colorize(:green)}
+          Description:
+          #{event.description.upcase.colorize(:green)}
+          "
         end
       }
-    elsif input == "GO BACK"
-      puts "GO BACK!"
-      User.loggedin(current_user)
+      choice = ["GO BACK","Join this appointment"]
+      input = prompt.select("---------------------", choice, symbols: { marker: "👉" })
+      if input == "Join this appointment"
+        Event.all.find{|event|
+          if event.name == selected_event
+            event.id
+            Appointment.find_or_create_by(user_id: self.id, event_id: event.id)
+            User.loggedin(current_user)
+          end
+        }
+      elsif input == "GO BACK"
+        puts "GO BACK!"
+        User.loggedin(current_user)
+      end
     end
   end
 

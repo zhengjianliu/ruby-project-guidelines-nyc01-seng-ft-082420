@@ -12,6 +12,7 @@ def start
   if input == "Login"
     ## This is here after user login into their account!!
     current_user = User.login
+    # system `say "loading #{current_user.name}'s account.'"`   ## uncomment this line will play welcome user.
     User.loggedin(current_user)
     # binding.pry
   elsif input == "Signup"
