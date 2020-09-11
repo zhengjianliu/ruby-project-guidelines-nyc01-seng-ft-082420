@@ -4,8 +4,8 @@ require_relative 'event.rb'
 require_relative 'appointment.rb'
 
 Catpix::print_image "lib/app/imgs/hdr.jpg",
-:limit_x => 0,
-:limit_y => 1.2,
+:limit_x => 1,
+:limit_y => 0,
 :center_x => true,
 :center_y => true,
 :bg => "white",
