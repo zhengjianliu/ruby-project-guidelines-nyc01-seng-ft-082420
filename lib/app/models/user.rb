@@ -15,7 +15,7 @@ class User < ActiveRecord::Base
      else
        puts "\n------------------------------------------"
        puts "\nPlease check your password and username!\n\n"
-       User.login
+       start
      end
 
   end

@@ -3,8 +3,17 @@ require_relative 'user.rb'
 require_relative 'event.rb'
 require_relative 'appointment.rb'
 
+Catpix::print_image "lib/app/imgs/hdr.jpg",
+:limit_x => 0,
+:limit_y => 1.2,
+:center_x => true,
+:center_y => true,
+:bg => "white",
+:bg_fill => false,
+:resolution => "high"
+
 def start
-  puts "WELCOME!!!"
+
   notice = Pastel.new.cyan.detach
   prompt = TTY::Prompt.new(active_color: notice)
   input = prompt.select("Would you to login or sign up?",
